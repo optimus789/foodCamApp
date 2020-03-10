@@ -26,15 +26,15 @@
 
             $('#button11').click(function () {
 
-                var name, weight, age;
+                var name, weight, age, gender;
                 name = document.getElementById("name1").value;
                 weight = document.getElementById("weight1").value;
                 age = document.getElementById("age1").value;
-
+                gender = document.getElementById("gender1").value;
                 s.setItem("Name", name);
                 s.setItem("Weight", weight);
                 s.setItem("Age", age);
-
+                s.setItem("Gender", gender);
                 Redirect();
 
             });
@@ -153,6 +153,25 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group has-danger">
+                                <label class="sr-only" for="gender">Gender</label>
+                                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                    <div class="input-group-addon mt-0" style="width: 4.4rem; text-align: left;">
+                                        <strong>Gender
+                                            :</strong> </div>
+
+                                    <select id="gender1" name="gender">
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+
+                                    </select> <br />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <input type="button" class="btn btn-success mt-2 " style="margin-left: 125px;" id="button11"
                         value="Submit">
                 </form>

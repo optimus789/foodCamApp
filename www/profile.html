@@ -10,6 +10,8 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/all.min.css" rel="stylesheet">
     <link href="css/solid.min.css" rel="stylesheet">
+    <link href="css/index.css" rel="stylesheet">
+
     <!-- Script -->
 
     <script type='text/javascript' src='js/jquery-3.4.min.js'></script>
@@ -20,17 +22,15 @@
         var cal, protein, carbs, fat;
         function nutri(age, gender, weight, height, factor) {
             if (gender == "m") {
-                var energy = (66.5 + (13.8 * weight) + (5 * height) - (6.8 * age)) * factor;
+                var energy = Math.round((66.5 + (13.8 * weight) + (5 * height) - (6.8 * age)) * factor);
             }
             else {
-                var energy = (655.1 + (9.6 * weight) + (1.9 * height) - (4.7 * age)) * factor;
+                var energy = Math.round((655.1 + (9.6 * weight) + (1.9 * height) - (4.7 * age)) * factor);
             }
-            var protein = (factor - 0.4) * weight;
-            var fat = (energy * 0.30) / 9;
-            var carbs = (energy / 4) * (0.55);
-            alert(protein);
-            alert(fat);
-            alert(carbs);
+            var protein = Math.round((factor - 0.4) * weight);
+            var fat = Math.round((energy * 0.30) / 9);
+            var carbs = Math.round((energy / 4) * (0.55));
+
             var d = window.localStorage;
             d.setItem("Calories_limit", energy);
             d.setItem("Protein_limit", protein);
@@ -114,6 +114,7 @@
         }*/
         $(document).ready(function () {
 
+
             // take picture from camera
             var s = window.localStorage;
 
@@ -194,18 +195,17 @@
     </nav>
 </head>
 
-<body class="" style="  background-image: linear-gradient(60deg,#ebebeb,#fff); 
-    filter: drop-shadow(0rem 0rem 0.5rem #ebebeb);background-repeat: no-repeat;">
+<body class="gradient3" style="  background-repeat: no-repeat ;">
 
     <div class="container">
-        <div class=" card shadow-lg  ">
-            <div class=" card-body mt-5">
+        <div class=" card shadow-lg  mt-5  gradient1" style="border-radius: 15px;">
+            <div class=" card-body">
 
                 <form class="form-horizontal ">
                     <div class="row">
 
                         <div class="col-md-6">
-                            <h3>Please give details </h3>
+                            <h3>Your Profile</h3>
                             <hr>
                         </div>
                     </div>
@@ -304,9 +304,46 @@
                         </div>
                     </div>
 
-                    <input type="button" class="btn btn-success mt-2 " style="margin-left: 125px;" id="button11"
-                        value="Submit">
+                    <button type="button" class="btn btn-success mt-2 " style="margin-left: 125px;" id="button11"
+                        value="Submit">Save</button>
                 </form>
+
+            </div>
+        </div>
+        <div class="card mt-5 shadow-lg gradient2" style="border-radius: 15px;">
+            <div class="card-title text-center mt-3">
+                <h4>Recommended Nutrients</h4>
+                <h6 class="text-warning">(Maintaining Weight)</h6>
+            </div>
+            <hr>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6"><strong>Calories</strong></div>
+                    <div class="col-6">
+                        <div id="cal"></div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row text-center">
+                    <div class="col-6"><strong>Proteins</strong></div>
+                    <div class="col-6">
+                        <div id="pro"></div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row text-center">
+                    <div class="col-6"><strong>Fats</strong></div>
+                    <div class="col-6">
+                        <div id="fat"></div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row text-center">
+                    <div class="col-6"><strong>Carbohydrates</strong></div>
+                    <div class="col-6">
+                        <div id="carbs"></div>
+                    </div>
+                </div>
 
             </div>
         </div>
@@ -316,6 +353,21 @@
     </div>
 
 </body>
+<script>
+    var d = window.localStorage;
 
+    document.getElementById('cal').innerHTML = d.getItem("Calories_limit") + " cal";
+    document.getElementById('pro').innerHTML = d.getItem("Protein_limit") + " gms";
+    document.getElementById('fat').innerHTML = d.getItem("Fat_limit") + " gms";
+    document.getElementById('carbs').innerHTML = d.getItem("Carbs_limit") + " gms";
+
+    document.getElementById('name1').value = d.getItem("Name");
+    document.getElementById('age1').value = d.getItem("Age");
+    document.getElementById('weight1').value = d.getItem("Weight");
+    document.getElementById('height1').value = d.getItem("Height");
+    document.getElementById('gender1').value = d.getItem("Gender");
+    document.getElementById('factor1').value = d.getItem("Factor");
+
+</script>
 
 </html>

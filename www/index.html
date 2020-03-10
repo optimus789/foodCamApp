@@ -210,6 +210,45 @@
             </div>
         </div>
 
+
+        <div class="card mt-5 shadow-lg">
+            <div class="card-title text-center mt-3">
+                <h4>Today's Record</h4>
+                <h6 class="text-warning" id="date"> </h6>
+            </div>
+            <hr>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6"><strong>Calories</strong></div>
+                    <div class="col-6">
+                        <div id="cal"></div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row text-center">
+                    <div class="col-6"><strong>Proteins</strong></div>
+                    <div class="col-6">
+                        <div id="pro"></div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row text-center">
+                    <div class="col-6"><strong>Fats</strong></div>
+                    <div class="col-6">
+                        <div id="fat"></div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row text-center">
+                    <div class="col-6"><strong>Carbohydrates</strong></div>
+                    <div class="col-6">
+                        <div id="carbs"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
         <div id="predictions">
             <div class="card mt-3">
                 <div class="card-body">
@@ -553,10 +592,27 @@
                 </tr>
 
             </table>
+
         </div>
         <p class="text-center m-4">Developed by Garima Kaushik</p>
     </div>
 </body>
 
+<script>
+    var d = window.localStorage;
+
+    document.getElementById('cal').innerHTML = d.getItem("Cal_cur") + " cal";
+    document.getElementById('pro').innerHTML = d.getItem("pro_cur") + " gms";
+    document.getElementById('fat').innerHTML = d.getItem("fat_cur") + " gms";
+    document.getElementById('carbs').innerHTML = d.getItem("carb_cur") + " gms";
+
+    document.getElementById('name1').value = d.getItem("Name");
+    document.getElementById('age1').value = d.getItem("Age");
+    document.getElementById('weight1').value = d.getItem("Weight");
+    document.getElementById('height1').value = d.getItem("Height");
+    document.getElementById('gender1').value = d.getItem("Gender");
+    document.getElementById('factor1').value = d.getItem("Factor");
+
+</script>
 
 </html>

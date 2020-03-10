@@ -105,3 +105,15 @@ h1 {
     animation:fade 3000ms infinite;
     -webkit-animation:fade 3000ms infinite;
 }
+
+.gradient1 {
+    background-image: linear-gradient(to bottom right, #64b5f6, white);
+  }
+
+  .gradient2 {
+    background-image: linear-gradient(to bottom right, #aed581, white);
+  }  
+  
+  .gradient3 {
+    background-image: linear-gradient(to bottom , #000, white);
+  }  

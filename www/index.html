@@ -20,7 +20,7 @@
 
 
         $(document).ready(function () {
-
+            updateData();
             var s = window.localStorage;
             age = parseInt(s.getItem("Age"));
             weight = parseInt(s.getItem("Weight"));
@@ -29,7 +29,8 @@
             if (s.getItem("Name") == null) {
                 alert("Now You will be redirected to enter your data ")
                 window.location = "profile.html";
-            } else {
+            }
+            else {
                 // take picture from camera
                 $('#but_take').click(function () {
                     navigator.camera.getPicture(onSuccess, onFail, {
@@ -38,8 +39,23 @@
                         destinationType: Camera.DestinationType.FILE_URL
                     });
                     document.getElementById("predictions").style.display = "none";
+                    var d = window.localStorage;
+
+                    document.getElementById('cal').innerHTML = d.getItem("Cal_cur") + " cal";
+                    document.getElementById('pro').innerHTML = d.getItem("Protein_cur") + " gms";
+                    document.getElementById('fat').innerHTML = d.getItem("Fat_cur") + " gms";
+                    document.getElementById('carbs').innerHTML = d.getItem("Carbs_cur") + " gms";
+
+
                 });
 
+                function save(string, dv1, nutrient) {
+                    var cal = Math.round(parseInt(nutrient, 10) / dv1);
+                    var cal_old = parseInt(s.getItem(string));
+                    cal_old = cal_old + cal;
+                    var x = window.localStorage;
+                    x.setItem(string, cal_old);
+                }
                 // upload select 
                 $("#but_select").click(function () {
                     navigator.camera.getPicture(onSuccess, onFail, {
@@ -73,34 +89,39 @@
                     var ft = new FileTransfer();
                     ft.upload(imageURI, "https://gt29.pythonanywhere.com/predict/", function (result) {
                         //alert('successfully uploaded ' + 'result is ' + result.response);
-                        alert(result.response);
-                        //document.querySelector("#textArea").innerHTML = result.response;
+
+
+                        //var data1 = result.response.replace(new RegExp("&#39;", "'"), replace);
+                        //data1 = result.response.replace("&#39;", " ' ");
+
                         $.getJSON('https://gt29.pythonanywhere.com/media/data_file.json', function (data) {
                             document.getElementById("predictions").style.display = "block";
-                            alert(data)
+
                             document.getElementById("p1-name").innerHTML = data.prediction[0].Name;
                             document.getElementById("p1-probab").innerHTML = data.prediction[0].Value.toPrecision(6) + " %";
-                            alert(parseInt(data.prediction[0].Serving, 10));
+
                             var dv1 = 1;
-                            if (parseInt(data.prediction[0].Serving, 10) > 200) {
-                                var n = parseInt(data.prediction[0].Serving, 10);
-                                alert(n)
+                            if (parseInt(data.prediction[0].Serving.replace(/[^0-9\.]/g, ''), 10) > 200) {
+                                var n = parseInt(data.prediction[0].Serving.replace(/[^0-9\.]/g, ''), 10);
+
                                 dv1 = n / 100;
                                 document.getElementById("p1-serv").innerHTML = "Per 100g";
                             }
                             else {
                                 document.getElementById("p1-serv").innerHTML = data.prediction[0].Serving;
                             }
-                            document.getElementById("p1-cal").innerHTML = parseInt(data.prediction[0].Calories, 10) / dv1 + "kcal";
-                            var cal = parseInt(data.prediction[0].Calories, 10);
-                            var cal_old = parseInt(s.getItem("Cal_cur"));
-                            alert("Calories cur:" + cal);
-                            cal_old = cal_old + cal;
-                            s.setItem("Cal_cur", cal_old);
-                            alert("Calories old:" + cal_old);
-                            document.getElementById("p1-fat").innerHTML = parseInt(data.prediction[0].Fat, 10) / dv1 + "g";
-                            document.getElementById("p1-carb").innerHTML = parseInt(data.prediction[0].Carbs, 10) / dv1 + "g";
-                            document.getElementById("p1-prot").innerHTML = parseInt(data.prediction[0].Protein, 10) / dv1 + "g";
+                            document.getElementById("p1-cal").innerHTML = Math.round(parseInt(data.prediction[0].Calories, 10) / dv1) + "kcal";
+
+                            save("Cal_cur", dv1, data.prediction[0].Calories);
+
+                            document.getElementById("p1-fat").innerHTML = Math.round(parseInt(data.prediction[0].Fat, 10) / dv1) + "g";
+
+                            save("Protein_cur", dv1, data.prediction[0].Protein);
+                            save("Carbs_cur", dv1, data.prediction[0].Carbs);
+                            save("Fat_cur", dv1, data.prediction[0].Fat);
+
+                            document.getElementById("p1-carb").innerHTML = Math.round(parseInt(data.prediction[0].Carbs, 10) / dv1) + "g";
+                            document.getElementById("p1-prot").innerHTML = Math.round(parseInt(data.prediction[0].Protein, 10) / dv1) + "g";
 
                             document.getElementById("p2-name").innerHTML = data.prediction[1].Name;
                             document.getElementById("p2-probab").innerHTML = data.prediction[1].Value.toPrecision(4) + " %";
@@ -117,6 +138,10 @@
                             document.getElementById("p3-fat").innerHTML = data.prediction[2].Fat;
                             document.getElementById("p3-carb").innerHTML = data.prediction[2].Carbs;
                             document.getElementById("p3-prot").innerHTML = data.prediction[2].Protein;
+
+                            updateData();
+
+
                         });
 
 
@@ -164,7 +189,7 @@
         }
     </style>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="#">Food Nutrition App</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false">
@@ -210,6 +235,73 @@
             </div>
         </div>
 
+        <div role="alert" aria-live="assertive" aria-atomic="true" class="toast d-none" id="toast1"
+            data-autohide="false">
+            <div class="toast-header">
+                <svg class=" rounded mr-2" width="20" height="20" xmlns="http://www.w3.org/2000/svg"
+                    preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+                    <rect fill="#007aff" width="100%" height="100%" /></svg>
+                <strong class="mr-auto">New Notification</strong>
+                <small>Moments ago</small>
+                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body">
+                Hello, You have consumed 1/3 of your Daily Calories Limit. Keep Going.
+            </div>
+        </div>
+
+        <div role="alert" aria-live="assertive" aria-atomic="true" id="toast2" class="toast d-none"
+            data-autohide="false">
+            <div class="toast-header">
+                <svg class=" rounded mr-2" width="20" height="20" xmlns="http://www.w3.org/2000/svg"
+                    preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+                    <rect fill="#007aff" width="100%" height="100%" /></svg>
+                <strong class="mr-auto">New Notification</strong>
+                <small>Moments ago</small>
+                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body">
+                Hello, You have consumed 2/3 of your Daily Calories Limit. Eat Healthy.
+            </div>
+        </div>
+
+        <div role="alert" aria-live="assertive" aria-atomic="true" id="toast3" class="toast d-none"
+            data-autohide="false">
+            <div class="toast-header">
+                <svg class=" rounded mr-2" width="20" height="20" xmlns="http://www.w3.org/2000/svg"
+                    preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+                    <rect fill="#007aff" width="100%" height="100%" /></svg>
+                <strong class="mr-auto">New Notification</strong>
+                <small>Moments ago</small>
+                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body">
+                Hello, You have consumed sufficient Calories Today. Take Rest.
+            </div>
+        </div>
+
+        <div role="alert" aria-live="assertive" aria-atomic="true" id="toast4" class="toast d-none"
+            data-autohide="false">
+            <div class="toast-header">
+                <svg class=" rounded mr-2" width="20" height="20" xmlns="http://www.w3.org/2000/svg"
+                    preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+                    <rect fill="#007aff" width="100%" height="100%" /></svg>
+                <strong class="mr-auto">New Notification</strong>
+                <small>Moments ago</small>
+                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body">
+                Hello, You are consuming excess of your Daily Calories Limit. Grab a Cycle.
+            </div>
+        </div>
 
         <div class="card mt-5 shadow-lg">
             <div class="card-title text-center mt-3">
@@ -599,19 +691,42 @@
 </body>
 
 <script>
-    var d = window.localStorage;
+    function updateData() {
 
-    document.getElementById('cal').innerHTML = d.getItem("Cal_cur") + " cal";
-    document.getElementById('pro').innerHTML = d.getItem("pro_cur") + " gms";
-    document.getElementById('fat').innerHTML = d.getItem("fat_cur") + " gms";
-    document.getElementById('carbs').innerHTML = d.getItem("carb_cur") + " gms";
+        var d = window.localStorage;
 
-    document.getElementById('name1').value = d.getItem("Name");
-    document.getElementById('age1').value = d.getItem("Age");
-    document.getElementById('weight1').value = d.getItem("Weight");
-    document.getElementById('height1').value = d.getItem("Height");
-    document.getElementById('gender1').value = d.getItem("Gender");
-    document.getElementById('factor1').value = d.getItem("Factor");
+        document.getElementById('cal').innerHTML = d.getItem("Cal_cur") + " kcal";
+        document.getElementById('pro').innerHTML = d.getItem("Protein_cur") + " gms";
+        document.getElementById('fat').innerHTML = d.getItem("Fat_cur") + " gms";
+        document.getElementById('carbs').innerHTML = d.getItem("Carbs_cur") + " gms";
+        var cal = d.getItem("Cal_cur");
+
+        var calLimit = d.getItem("Calories_limit") / 3;
+        $('.toast').toast('hide');
+        if (cal > calLimit && cal < calLimit * 2) {
+            $('#toast1').toast('show');
+            $('#toast1').toggleClass('d-none');
+        }
+        else if (cal > calLimit * 2 && cal < calLimit * 3) {
+            $('#toast2').toast('show');
+            $('#toast2').toggleClass('d-none');
+
+        }
+
+        else if (cal > calLimit * 3 && cal < (calLimit * 3) + 100) {
+            $('#toast3').toast('show');
+            $('#toast3').toggleClass('d-none');
+
+        }
+        else if (cal > (calLimit * 3) + 100) {
+            $('#toast4').toast('show');
+            $('#toast4').toggleClass('d-none');
+
+        }
+
+
+    }
+
 
 </script>
 

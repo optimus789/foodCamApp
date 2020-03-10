@@ -1,0 +1,29 @@
+{
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {}
+  },
+  "installed_plugins": {
+    "cordova-plugin-whitelist": {
+      "PACKAGE_NAME": "com1.exampledjangofood.cam"
+    },
+    "cordova-android-support-gradle-release": {
+      "ANDROID_SUPPORT_VERSION": "27.+",
+      "PACKAGE_NAME": "com1.exampledjangofood.cam"
+    },
+    "cordova-plugin-camera": {
+      "ANDROID_SUPPORT_V4_VERSION": "27.+",
+      "PACKAGE_NAME": "com.exampledjangofo99od.cam"
+    },
+    "cordova-plugin-file": {
+      "PACKAGE_NAME": "com.exampledjangofo99od.cam"
+    },
+    "cordova-plugin-file-transfer": {
+      "PACKAGE_NAME": "com.exampledjangofo99od.cam"
+    }
+  },
+  "dependent_plugins": {}
+}

@@ -18,15 +18,13 @@
     <script type='text/javascript'>
 
 
-        function nutri(age, weight, gender) {
-            if (age > 18) {
-
-            }
-        }
 
         $(document).ready(function () {
 
             var s = window.localStorage;
+            age = parseInt(s.getItem("Age"));
+            weight = parseInt(s.getItem("Weight"));
+            gender = s.getItem("Gender");
 
             if (s.getItem("Name") == null) {
                 alert("Now You will be redirected to enter your data ")
@@ -79,13 +77,30 @@
                         //document.querySelector("#textArea").innerHTML = result.response;
                         $.getJSON('https://gt29.pythonanywhere.com/media/data_file.json', function (data) {
                             document.getElementById("predictions").style.display = "block";
+                            alert(data)
                             document.getElementById("p1-name").innerHTML = data.prediction[0].Name;
                             document.getElementById("p1-probab").innerHTML = data.prediction[0].Value.toPrecision(6) + " %";
-                            document.getElementById("p1-serv").innerHTML = data.prediction[0].Serving;
-                            document.getElementById("p1-cal").innerHTML = data.prediction[0].Calories;
-                            document.getElementById("p1-fat").innerHTML = data.prediction[0].Fat;
-                            document.getElementById("p1-carb").innerHTML = data.prediction[0].Carbs;
-                            document.getElementById("p1-prot").innerHTML = data.prediction[0].Protein;
+                            alert(parseInt(data.prediction[0].Serving, 10));
+                            var dv1 = 1;
+                            if (parseInt(data.prediction[0].Serving, 10) > 200) {
+                                var n = parseInt(data.prediction[0].Serving, 10);
+                                alert(n)
+                                dv1 = n / 100;
+                                document.getElementById("p1-serv").innerHTML = "Per 100g";
+                            }
+                            else {
+                                document.getElementById("p1-serv").innerHTML = data.prediction[0].Serving;
+                            }
+                            document.getElementById("p1-cal").innerHTML = parseInt(data.prediction[0].Calories, 10) / dv1 + "kcal";
+                            var cal = parseInt(data.prediction[0].Calories, 10);
+                            var cal_old = parseInt(s.getItem("Cal_cur"));
+                            alert("Calories cur:" + cal);
+                            cal_old = cal_old + cal;
+                            s.setItem("Cal_cur", cal_old);
+                            alert("Calories old:" + cal_old);
+                            document.getElementById("p1-fat").innerHTML = parseInt(data.prediction[0].Fat, 10) / dv1 + "g";
+                            document.getElementById("p1-carb").innerHTML = parseInt(data.prediction[0].Carbs, 10) / dv1 + "g";
+                            document.getElementById("p1-prot").innerHTML = parseInt(data.prediction[0].Protein, 10) / dv1 + "g";
 
                             document.getElementById("p2-name").innerHTML = data.prediction[1].Name;
                             document.getElementById("p2-probab").innerHTML = data.prediction[1].Value.toPrecision(4) + " %";

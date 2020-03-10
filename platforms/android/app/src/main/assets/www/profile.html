@@ -11,31 +11,129 @@
     <link href="css/all.min.css" rel="stylesheet">
     <link href="css/solid.min.css" rel="stylesheet">
     <!-- Script -->
-    <script type=" text/javascript" src="cordova.js"></script>
+
     <script type='text/javascript' src='js/jquery-3.4.min.js'></script>
     <script src="js/bootstrap.min.js" type="text/javascript"></script>
 
     <script type='text/javascript'>
+        var age, weight, gender;
+        var cal, protein, carbs, fat;
+        function nutri(age, gender) {
+            if (age > 18) {
+                if (gender == "m") {
+                    cal = 2320;
+                    protein = 60;
+                    fat = 30;
+                }
+                else {
+                    cal = 2730;
+                    protein = 55;
+                    fat = 30;
+                }
 
+            }
+            else if (age <= 18 && age >= 16) {
+                if (gender >= "m") {
+                    cal = 3020;
+                    protein = 61.5;
+                    fat = 50;
+                }
+                else {
+                    cal = 2440;
+                    protein = 55.5;
+                    fat = 35;
+                }
+
+            }
+            else if (age >= 13 && age <= 15) {
+                if (gender >= "m") {
+                    cal = 2750;
+                    protein = 54.3;
+                    fat = 45;
+                }
+                else {
+                    cal = 2330;
+                    protein = 51.9;
+                    fat = 40;
+                }
+
+            }
+            else if (age >= 10 && age <= 12) {
+                if (gender >= "m") {
+                    cal = 2190;
+                    protein = 39.9;
+                    fat = 35;
+                }
+                else {
+                    cal = 2010;
+                    protein = 40.4;
+                    fat = 35;
+                }
+            }
+            else if (age >= 7 && age <= 9) {
+                cal = 1690;
+                protein = 29.5;
+                fat = 30;
+            }
+            else if (age >= 4 && age <= 6) {
+                cal = 1350;
+                protein = 20.1;
+                fat = 25;
+            }
+            else {
+                cal = 1060;
+                protein = 16.7;
+                fat = 27;
+            }
+            //55% of total carbs as limit
+            carbs = (cal / 4) * (55 / 100);
+            var d = window.localStorage;
+            d.setItem("Calories_limit", cal);
+            d.setItem("Protein_limit", protein);
+            d.setItem("Carbs_limit", carbs);
+            d.setItem("Fat_limit", fat);
+        }
         $(document).ready(function () {
-
-
 
             // take picture from camera
             var s = window.localStorage;
 
             $('#button11').click(function () {
 
-                var name, weight, age;
+                var name, weight, age, gender;
                 name = document.getElementById("name1").value;
                 weight = document.getElementById("weight1").value;
                 age = document.getElementById("age1").value;
+                gender = document.getElementById("gender1").value;
 
-                s.setItem("Name", name);
-                s.setItem("Weight", weight);
-                s.setItem("Age", age);
+                if (name == "" || weight == "" || age == "" || gender == "") {
+                    some = "";
+                    if (name == "") {
+                        some = some + "Name ";
+                    }
+                    if (weight == "") {
+                        some = some + "Weight ";
+                    }
+                    if (age == "") {
+                        some = some + "Age ";
+                    }
 
-                Redirect();
+                    alert("Please enter the following data: " + some);
+                }
+                else {
+                    s.setItem("Name", name);
+                    s.setItem("Weight", weight);
+                    s.setItem("Age", age);
+                    s.setItem("Gender", gender);
+                    s.setItem("Cal_cur", "0");
+                    s.setItem("Protein_cur", "0");
+                    s.setItem("Fat_cur", "0");
+                    s.setItem("Carbs_cur", "0");
+                    nutri(age, gender);
+                    Redirect();
+
+                }
+
 
             });
 
@@ -45,35 +143,7 @@
 
         });
     </script>
-    <style>
-        table {
-            padding: auto;
-            border: 1px solid #1c87c9;
-            border-radius: 5px;
-            background-color: #e5e5e5;
-            text-align: center;
-            font-size: 10.5px;
-            display: none;
-            transition: 3s;
-        }
 
-
-        td,
-        th {
-            padding: auto;
-            border: 1px solid #1c87c9;
-            border-radius: 5px;
-            background-color: #e5e5e5;
-            text-align: center;
-            font-size: 10.5px;
-
-            transition: 3s;
-        }
-
-        #predictions {
-            display: none;
-        }
-    </style>
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="#">Food Nutrition App</a>
@@ -134,7 +204,7 @@
                                     <div class="input-group-addon mt-1" style="width: 4.4rem; text-align: left;">
                                         <strong>Age
                                             :</strong> </div>
-                                    <input type="text" name="age" class="form-control" id="age1" placeholder="0 - 100">
+                                    <input type="text" name="age" class="form-control" id="age1" placeholder="1 - 100">
                                 </div>
                             </div>
                         </div>
@@ -148,28 +218,34 @@
                                     <div class="input-group-addon mt-1" style="width: 4.4rem; text-align: left;">
                                         <strong>Weight
                                             :</strong> </div>
-                                    <input type="text" name="weight" class="form-control" id="weight1" placeholder="55">
+                                    <input type="text" name="weight" required class="form-control" id="weight1"
+                                        placeholder="55">
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group has-danger">
+                                <label class="sr-only" for="gender">Gender</label>
+                                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                    <div class="input-group-addon mt-0" style="width: 4.4rem; text-align: left;">
+                                        <strong>Gender
+                                            :</strong> </div>
+
+                                    <select id="gender1" name="gender">
+                                        <option value="m">Male</option>
+                                        <option value="f">Female</option>
+
+                                    </select> <br />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <input type="button" class="btn btn-success mt-2 " style="margin-left: 125px;" id="button11"
                         value="Submit">
                 </form>
-                <!--<div class="" style="text-align: center;">
-                    <img src="img/cam2.jpg" id='img' style="width: 160px; height: 140px; margin-right: 10px;">
-                </div><br />
-
-                <div style="width:100%; text-align:center; padding:10px;">
-                    <button class="btn btn-outline-success" id='but_take'>Take photo</button>
-                    <br><br>
-                    <button class="btn btn-outline-primary" id='but_select'>Select photo from Gallery</button>
-                    <br><br>
-                     <p id="textArea" class="text-white" style="font-size: 20px;">hello</p>
-            <p id="textArea" class="text-white" style="font-size: 20px;">hello</p>
-            <p id="textArea" class="text-white" style="font-size: 20px;">hello</p>
-            <p id="textArea" class="text-white" style="font-size: 20px;">hello</p>-->
-
 
             </div>
         </div>

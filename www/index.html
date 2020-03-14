@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Security-Policy"
-        content="style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; width=device-width, initial-scale=1.0" />
+        content="default-src *;style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; width=device-width, initial-scale=1.0" />
     <title>PhoneGap app</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/all.min.css" rel="stylesheet">
@@ -40,13 +40,6 @@
                         destinationType: Camera.DestinationType.FILE_URL
                     });
                     document.getElementById("predictions").style.display = "none";
-                    var d = window.localStorage;
-
-                    document.getElementById('cal').innerHTML = d.getItem("Cal_cur") + " cal";
-                    document.getElementById('pro').innerHTML = d.getItem("Protein_cur") + " gms";
-                    document.getElementById('fat').innerHTML = d.getItem("Fat_cur") + " gms";
-                    document.getElementById('carbs').innerHTML = d.getItem("Carbs_cur") + " gms";
-
 
                 });
 
@@ -714,7 +707,6 @@
             $('#toast2').toggleClass('d-none');
 
         }
-
         else if (cal > calLimit * 3 && cal < (calLimit * 3) + 100) {
             $('#toast3').toast('show');
             $('#toast3').toggleClass('d-none');
@@ -725,23 +717,33 @@
             $('#toast4').toggleClass('d-none');
 
         }
+        else {
+            var f = 0;
+        }
 
         var dt = new Date();
-
-        if (dt.getMonth() != s.getItem('Month_cur')) {
+        var month = dt.getMonth();
+        var date = dt.getDate();
+        if (month != d.getItem('Month_cur')) {
             d.setItem("Cal_cur", 0);
             d.setItem("Protein_cur", 0);
             d.setItem("Fat_cur", 0);
             d.setItem("Carbs_cur", 0);
             d.setItem('Month_cur', dt.getMonth());
         }
+        else {
+            var p = 0;
+        }
 
-        if (dt.getDate() != s.getItem('Date_cur')) {
+        if (date != d.getItem('Date_cur')) {
             d.setItem("Cal_cur", 0);
             d.setItem("Protein_cur", 0);
             d.setItem("Fat_cur", 0);
             d.setItem("Carbs_cur", 0);
             d.setItem('Date_cur', dt.getDate());
+        }
+        else {
+            var p = 1;
         }
 
 

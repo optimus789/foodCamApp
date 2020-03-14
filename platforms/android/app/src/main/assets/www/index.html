@@ -23,148 +23,141 @@
             updateData();
             var s = window.localStorage;
 
-            var dt = new Date();
-            if (dt.getDate() != s.getItem('Date_cur')) {
-                s.setItem("Cal_cur", 0);
-                s.setItem("Protein_cur", 0);
-                s.setItem("Fat_cur", 0);
-                s.setItem("Carbs_cur", 0);
-                s.setItem('Date_cur', dt.getDate());
-            }
+        }
 
             age = parseInt(s.getItem("Age"));
-            weight = parseInt(s.getItem("Weight"));
-            gender = s.getItem("Gender");
+        weight = parseInt(s.getItem("Weight"));
+        gender = s.getItem("Gender");
 
-            if (s.getItem("Name") == null) {
-                alert("Now You will be redirected to enter your data ")
-                window.location = "profile.html";
-            }
-            else {
-                // take picture from camera
-                $('#but_take').click(function () {
-                    navigator.camera.getPicture(onSuccess, onFail, {
-                        quality: 75,
-                        targetWidth: 350,
-                        destinationType: Camera.DestinationType.FILE_URL
-                    });
-                    document.getElementById("predictions").style.display = "none";
-                    var d = window.localStorage;
-
-                    document.getElementById('cal').innerHTML = d.getItem("Cal_cur") + " cal";
-                    document.getElementById('pro').innerHTML = d.getItem("Protein_cur") + " gms";
-                    document.getElementById('fat').innerHTML = d.getItem("Fat_cur") + " gms";
-                    document.getElementById('carbs').innerHTML = d.getItem("Carbs_cur") + " gms";
-
-
+        if (s.getItem("Name") == null) {
+            alert("Now You will be redirected to enter your data ")
+            window.location = "profile.html";
+        }
+        else {
+            // take picture from camera
+            $('#but_take').click(function () {
+                navigator.camera.getPicture(onSuccess, onFail, {
+                    quality: 75,
+                    targetWidth: 350,
+                    destinationType: Camera.DestinationType.FILE_URL
                 });
+                document.getElementById("predictions").style.display = "none";
+                var d = window.localStorage;
 
-                function save(string, dv1, nutrient) {
-                    var cal = Math.round(parseInt(nutrient, 10) / dv1);
-                    var cal_old = parseInt(s.getItem(string));
-                    cal_old = cal_old + cal;
-                    var x = window.localStorage;
-                    x.setItem(string, cal_old);
-                }
-                // upload select 
-                $("#but_select").click(function () {
-                    navigator.camera.getPicture(onSuccess, onFail, {
-                        quality: 75,
-                        targetWidth: 325,
-                        sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
-                        allowEdit: true,
-                        destinationType: Camera.DestinationType.FILE_URI
-                    });
-                    document.getElementById("predictions").style.display = "none";
+                document.getElementById('cal').innerHTML = d.getItem("Cal_cur") + " cal";
+                document.getElementById('pro').innerHTML = d.getItem("Protein_cur") + " gms";
+                document.getElementById('fat').innerHTML = d.getItem("Fat_cur") + " gms";
+                document.getElementById('carbs').innerHTML = d.getItem("Carbs_cur") + " gms";
+
+
+            });
+
+            function save(string, dv1, nutrient) {
+                var cal = Math.round(parseInt(nutrient, 10) / dv1);
+                var cal_old = parseInt(s.getItem(string));
+                cal_old = cal_old + cal;
+                var x = window.localStorage;
+                x.setItem(string, cal_old);
+            }
+            // upload select 
+            $("#but_select").click(function () {
+                navigator.camera.getPicture(onSuccess, onFail, {
+                    quality: 75,
+                    targetWidth: 325,
+                    sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
+                    allowEdit: true,
+                    destinationType: Camera.DestinationType.FILE_URI
                 });
+                document.getElementById("predictions").style.display = "none";
+            });
 
-                // Change image source and upload photo to server
-                function onSuccess(imageURI) {
-                    // Set image source
-                    var image = document.getElementById('img');
-                    image.src = imageURI + '?' + Math.random();
+            // Change image source and upload photo to server
+            function onSuccess(imageURI) {
+                // Set image source
+                var image = document.getElementById('img');
+                image.src = imageURI + '?' + Math.random();
 
-                    var options = new FileUploadOptions();
-                    options.fileKey = "file";
-                    options.fileName = imageURI.substr(imageURI.lastIndexOf('/') + 1);
-                    options.mimeType = "image/jpeg";
+                var options = new FileUploadOptions();
+                options.fileKey = "file";
+                options.fileName = imageURI.substr(imageURI.lastIndexOf('/') + 1);
+                options.mimeType = "image/jpeg";
 
-                    var params = {};
-                    params.value1 = "test";
-                    params.value2 = "param";
+                var params = {};
+                params.value1 = "test";
+                params.value2 = "param";
 
-                    options.params = params;
-                    options.chunkedMode = false;
+                options.params = params;
+                options.chunkedMode = false;
 
-                    var ft = new FileTransfer();
-                    ft.upload(imageURI, "https://gt29.pythonanywhere.com/predict/", function (result) {
-                        //alert('successfully uploaded ' + 'result is ' + result.response);
-
-
-                        //var data1 = result.response.replace(new RegExp("&#39;", "'"), replace);
-                        //data1 = result.response.replace("&#39;", " ' ");
-
-                        $.getJSON('https://gt29.pythonanywhere.com/media/data_file.json', function (data) {
-                            document.getElementById("predictions").style.display = "block";
-
-                            document.getElementById("p1-name").innerHTML = data.prediction[0].Name;
-                            document.getElementById("p1-probab").innerHTML = data.prediction[0].Value.toPrecision(6) + " %";
-
-                            var dv1 = 1;
-                            if (parseInt(data.prediction[0].Serving.replace(/[^0-9\.]/g, ''), 10) > 200) {
-                                var n = parseInt(data.prediction[0].Serving.replace(/[^0-9\.]/g, ''), 10);
-
-                                dv1 = n / 100;
-                                document.getElementById("p1-serv").innerHTML = "Per 100g";
-                            }
-                            else {
-                                document.getElementById("p1-serv").innerHTML = data.prediction[0].Serving;
-                            }
-                            document.getElementById("p1-cal").innerHTML = Math.round(parseInt(data.prediction[0].Calories, 10) / dv1) + "kcal";
-
-                            save("Cal_cur", dv1, data.prediction[0].Calories);
-
-                            document.getElementById("p1-fat").innerHTML = Math.round(parseInt(data.prediction[0].Fat, 10) / dv1) + "g";
-
-                            save("Protein_cur", dv1, data.prediction[0].Protein);
-                            save("Carbs_cur", dv1, data.prediction[0].Carbs);
-                            save("Fat_cur", dv1, data.prediction[0].Fat);
-
-                            document.getElementById("p1-carb").innerHTML = Math.round(parseInt(data.prediction[0].Carbs, 10) / dv1) + "g";
-                            document.getElementById("p1-prot").innerHTML = Math.round(parseInt(data.prediction[0].Protein, 10) / dv1) + "g";
-
-                            document.getElementById("p2-name").innerHTML = data.prediction[1].Name;
-                            document.getElementById("p2-probab").innerHTML = data.prediction[1].Value.toPrecision(4) + " %";
-                            document.getElementById("p2-serv").innerHTML = data.prediction[1].Serving;
-                            document.getElementById("p2-cal").innerHTML = data.prediction[1].Calories;
-                            document.getElementById("p2-fat").innerHTML = data.prediction[1].Fat;
-                            document.getElementById("p2-carb").innerHTML = data.prediction[1].Carbs;
-                            document.getElementById("p2-prot").innerHTML = data.prediction[1].Protein;
-
-                            document.getElementById("p3-name").innerHTML = data.prediction[2].Name;
-                            document.getElementById("p3-probab").innerHTML = data.prediction[2].Value.toPrecision(4) + " %";
-                            document.getElementById("p3-serv").innerHTML = data.prediction[2].Serving;
-                            document.getElementById("p3-cal").innerHTML = data.prediction[2].Calories;
-                            document.getElementById("p3-fat").innerHTML = data.prediction[2].Fat;
-                            document.getElementById("p3-carb").innerHTML = data.prediction[2].Carbs;
-                            document.getElementById("p3-prot").innerHTML = data.prediction[2].Protein;
-
-                            updateData();
+                var ft = new FileTransfer();
+                ft.upload(imageURI, "https://gt29.pythonanywhere.com/predict/", function (result) {
+                    //alert('successfully uploaded ' + 'result is ' + result.response);
 
 
-                        });
+                    //var data1 = result.response.replace(new RegExp("&#39;", "'"), replace);
+                    //data1 = result.response.replace("&#39;", " ' ");
+
+                    $.getJSON('https://gt29.pythonanywhere.com/media/data_file.json', function (data) {
+                        document.getElementById("predictions").style.display = "block";
+
+                        document.getElementById("p1-name").innerHTML = data.prediction[0].Name;
+                        document.getElementById("p1-probab").innerHTML = data.prediction[0].Value.toPrecision(6) + " %";
+
+                        var dv1 = 1;
+                        if (parseInt(data.prediction[0].Serving.replace(/[^0-9\.]/g, ''), 10) > 200) {
+                            var n = parseInt(data.prediction[0].Serving.replace(/[^0-9\.]/g, ''), 10);
+
+                            dv1 = n / 100;
+                            document.getElementById("p1-serv").innerHTML = "Per 100g";
+                        }
+                        else {
+                            document.getElementById("p1-serv").innerHTML = data.prediction[0].Serving;
+                        }
+                        document.getElementById("p1-cal").innerHTML = Math.round(parseInt(data.prediction[0].Calories, 10) / dv1) + "kcal";
+
+                        save("Cal_cur", dv1, data.prediction[0].Calories);
+
+                        document.getElementById("p1-fat").innerHTML = Math.round(parseInt(data.prediction[0].Fat, 10) / dv1) + "g";
+
+                        save("Protein_cur", dv1, data.prediction[0].Protein);
+                        save("Carbs_cur", dv1, data.prediction[0].Carbs);
+                        save("Fat_cur", dv1, data.prediction[0].Fat);
+
+                        document.getElementById("p1-carb").innerHTML = Math.round(parseInt(data.prediction[0].Carbs, 10) / dv1) + "g";
+                        document.getElementById("p1-prot").innerHTML = Math.round(parseInt(data.prediction[0].Protein, 10) / dv1) + "g";
+
+                        document.getElementById("p2-name").innerHTML = data.prediction[1].Name;
+                        document.getElementById("p2-probab").innerHTML = data.prediction[1].Value.toPrecision(4) + " %";
+                        document.getElementById("p2-serv").innerHTML = data.prediction[1].Serving;
+                        document.getElementById("p2-cal").innerHTML = data.prediction[1].Calories;
+                        document.getElementById("p2-fat").innerHTML = data.prediction[1].Fat;
+                        document.getElementById("p2-carb").innerHTML = data.prediction[1].Carbs;
+                        document.getElementById("p2-prot").innerHTML = data.prediction[1].Protein;
+
+                        document.getElementById("p3-name").innerHTML = data.prediction[2].Name;
+                        document.getElementById("p3-probab").innerHTML = data.prediction[2].Value.toPrecision(4) + " %";
+                        document.getElementById("p3-serv").innerHTML = data.prediction[2].Serving;
+                        document.getElementById("p3-cal").innerHTML = data.prediction[2].Calories;
+                        document.getElementById("p3-fat").innerHTML = data.prediction[2].Fat;
+                        document.getElementById("p3-carb").innerHTML = data.prediction[2].Carbs;
+                        document.getElementById("p3-prot").innerHTML = data.prediction[2].Protein;
+
+                        updateData();
 
 
-                    }, function (error) {
-                        alert('error : ' + JSON.stringify(error));
-                    }, options);
+                    });
 
-                }
+
+                }, function (error) {
+                    alert('error : ' + JSON.stringify(error));
+                }, options);
+
             }
+        }
 
-            function onFail(message) {
-                alert('Failed because: ' + message);
-            }
+        function onFail(message) {
+            alert('Failed because: ' + message);
+        }
         });
 
 
@@ -701,12 +694,7 @@
 </body>
 
 <script>
-    setInterval(function () {
 
-        var ls = window.localStorage;
-
-
-    }, 1000 * 60 * 60 * 24);
     function updateData() {
 
         var d = window.localStorage;
@@ -738,6 +726,15 @@
             $('#toast4').toast('show');
             $('#toast4').toggleClass('d-none');
 
+        }
+
+        var dt = new Date();
+        if (dt.getDate() != s.getItem('Date_cur')) {
+            d.setItem("Cal_cur", 0);
+            d.setItem("Protein_cur", 0);
+            d.setItem("Fat_cur", 0);
+            d.setItem("Carbs_cur", 0);
+            d.setItem('Date_cur', dt.getDate());
         }
 
 

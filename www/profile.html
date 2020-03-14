@@ -37,81 +37,7 @@
             d.setItem("Carbs_limit", carbs);
             d.setItem("Fat_limit", fat);
         }
-        /*function nutri(age, gender) {
-            if (age > 18) {
-                if (gender == "m") {
-                    cal = 2320;
-                    protein = 60;
-                    fat = 30;
-                }
-                else {
-                    cal = 2730;
-                    protein = 55;
-                    fat = 30;
-                }
 
-            }
-            else if (age <= 18 && age >= 16) {
-                if (gender >= "m") {
-                    cal = 3020;
-                    protein = 61.5;
-                    fat = 50;
-                }
-                else {
-                    cal = 2440;
-                    protein = 55.5;
-                    fat = 35;
-                }
-
-            }
-            else if (age >= 13 && age <= 15) {
-                if (gender >= "m") {
-                    cal = 2750;
-                    protein = 54.3;
-                    fat = 45;
-                }
-                else {
-                    cal = 2330;
-                    protein = 51.9;
-                    fat = 40;
-                }
-
-            }
-            else if (age >= 10 && age <= 12) {
-                if (gender >= "m") {
-                    cal = 2190;
-                    protein = 39.9;
-                    fat = 35;
-                }
-                else {
-                    cal = 2010;
-                    protein = 40.4;
-                    fat = 35;
-                }
-            }
-            else if (age >= 7 && age <= 9) {
-                cal = 1690;
-                protein = 29.5;
-                fat = 30;
-            }
-            else if (age >= 4 && age <= 6) {
-                cal = 1350;
-                protein = 20.1;
-                fat = 25;
-            }
-            else {
-                cal = 1060;
-                protein = 16.7;
-                fat = 27;
-            }
-            //55% of total carbs as limit
-            carbs = (cal / 4) * (55 / 100);
-            var d = window.localStorage;
-            d.setItem("Calories_limit", cal);
-            d.setItem("Protein_limit", protein);
-            d.setItem("Carbs_limit", carbs);
-            d.setItem("Fat_limit", fat);
-        }*/
         $(document).ready(function () {
 
 
@@ -157,6 +83,7 @@
                     s.setItem("Cal_cur", "0");
                     var dt = new Date();
                     s.setItem("Date_cur", dt.getDate());
+                    s.getItem("Month_cur", dt.getMonth());
                     s.setItem("Protein_cur", "0");
                     s.setItem("Fat_cur", "0");
                     s.setItem("Carbs_cur", "0");

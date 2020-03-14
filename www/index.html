@@ -23,8 +23,6 @@
             updateData();
             var s = window.localStorage;
 
-
-
             age = parseInt(s.getItem("Age"));
             weight = parseInt(s.getItem("Weight"));
             gender = s.getItem("Gender");
@@ -729,6 +727,15 @@
         }
 
         var dt = new Date();
+
+        if (dt.getMonth() != s.getItem('Month_cur')) {
+            d.setItem("Cal_cur", 0);
+            d.setItem("Protein_cur", 0);
+            d.setItem("Fat_cur", 0);
+            d.setItem("Carbs_cur", 0);
+            d.setItem('Month_cur', dt.getMonth());
+        }
+
         if (dt.getDate() != s.getItem('Date_cur')) {
             d.setItem("Cal_cur", 0);
             d.setItem("Protein_cur", 0);
